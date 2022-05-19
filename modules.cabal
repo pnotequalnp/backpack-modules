@@ -1,0 +1,39 @@
+cabal-version: 3.4
+name:          modules
+version:       0.1.0.0
+
+common base
+    default-language:   GHC2021
+    default-extensions: BlockArguments QualifiedDo
+    ghc-options:        -Wall
+    build-depends:      base ^>=4.16.1.0
+
+library
+    import:          base
+    signatures:      Monad
+    exposed-modules: Monad.Combinators
+    hs-source-dirs:  src/modules
+
+library monads
+    import:          base
+    exposed-modules:
+        Monad.IO
+        Monad.Maybe
+    hs-source-dirs:  src/monads
+
+library transformers
+    import:          base
+    exposed-modules: Monad.Trans.Maybe
+    hs-source-dirs:  src/transformers
+    build-depends:   modules
+
+executable mods
+    import:         base
+    main-is:        Main.hs
+    hs-source-dirs: app
+    build-depends:  modules:{modules,monads,transformers}
+    mixins:
+        modules (Monad.Combinators as IO) requires (Monad as Monad.IO),
+        modules (Monad.Combinators as Maybe) requires (Monad as Monad.Maybe),
+        modules:transformers (Monad.Trans.Maybe as Monad.Trans.Maybe.IO) requires (Monad as Monad.IO),
+        modules (Monad.Combinators as MaybeT.IO) requires (Monad as Monad.Trans.Maybe.IO)

@@ -1,0 +1,7 @@
+signature Monad where
+
+import Data.Kind (Type)
+
+data M :: Type -> Type
+pure :: a -> M a
+(>>=) :: M a -> (a -> M b) -> M b
